@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      /* General mobile-friendly styles */
+      body {
+        font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+        padding: 10px;
+        font-size: 18px; /* larger text for mobile */
+      }
+      input, button {
+        font-size: 20px;  /* bigger input/button text */
+        padding: 10px;
+        margin-top: 5px;
+        width: 100%; /* full width for mobile */
+        box-sizing: border-box;
+      }
+      #result {
+        margin-top: 20px;
+        font-size: 20px; /* larger text for results */
+      }
+      img.guest-image {
+        max-width: 80px;
+        height: auto;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
+    </style>
+    <base target="_top">
+    <script>
+      function lookupGuest() {
+        const query = document.getElementById('guestInput').value.trim();
+        console.log("query:", query);
+
+        if (!query) return;
+
+        google.script.run
+          .withSuccessHandler(showResult)
+          .withFailureHandler(error => console.error("Script error:", error.message))
+          .searchGuest(query);
+        // google.script.run.withSuccessHandler(showResult).searchGuest(query);
+      }
+
+      function showResult(result) {
+        const div = document.getElementById('result');
+        console.log("Returned result:", result);
+
+        if (!result || typeof result !== 'object') {
+          div.innerHTML = "<p>❌ Guest not found. Please check your Guest ID, full name, or email.</p>";
+          return;
+        }
+
+        if (result.multiple) {
+          div.innerHTML = `<p style="color: orange;">⚠️ Multiple matches found (${result.count}). Please enter more specific info (full name, email, or Guest ID).</p>`;
+          return;
+        }
+
+        // Guard against missing fields
+        if (!result.name || !result.guestId) {
+          div.innerHTML = "<p>❌ Invalid guest record returned.</p>";
+          console.warn("Missing fields in result:", result);
+          return;
+        }
+
+        let statusMsg = "";
+        let buttonHtml = "";
+
+        if (result.checkedIn) {
+          statusMsg = `<p style="color: green; font-weight: bold;">✅ Already checked in on ${new Date(result.time).toLocaleString()}.</p>`;
+        } else {
+          statusMsg = "<p style='color: blue;'>🕐 Not checked in yet.</p>";
+          buttonHtml = `<button onclick="checkIn(${result.row})">✅ Check In Now</button>`;
+        }
+
+        const msg = `
+          <h3>Welcome, ${result.name}! Please show the page to the host!</h3>
+          <p>Guest ID: ${result.guestId}</p>
+          <p>Email: ${result.email || 'N/A'}</p>
+          <p>🎟️ Drink Tickets: ${result.drinkTickets}</p>
+          <p>💰 Payment Status: ${result.paymentStatus || 'Pending'}</p>
+          ${statusMsg}
+          ${buttonHtml}
+        `;
+
+        div.innerHTML = msg;
+      }
+
+      function checkIn(row) {
+        google.script.run.withSuccessHandler(() => {
+          const div = document.getElementById('result');
+          div.innerHTML += "<p style='color: green; font-weight: bold;'>✅ You are now checked in!</p>";
+        }).checkInGuest(row);
+      }
+    </script>
+  </head>
+  <body>
+    <h2>The night we met "2" - Check-In</h2>
+    <p>Enter your Guest ID, full name, or email:</p>
+    <input type="text" id="guestInput">
+    <button onclick="lookupGuest()">🔍 Search</button>
+    <div id="result" style="margin-top:20px;"></div>
+  </body>
+</html>
