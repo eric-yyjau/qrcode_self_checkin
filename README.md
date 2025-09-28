@@ -39,6 +39,7 @@ Guest ID | Name | Email | Drink Tickets | Payment Status | Checked In | Check-in
 
 
 > Note: `Checked In` is a boolean (`TRUE/FALSE`), and `Check-in Time` is left empty initially.
+
 > example: https://docs.google.com/spreadsheets/d/1xM2FEM6wCVwmeNHdaP_OuKCAn43TVb375r0bosGjmCk/edit?gid=0#gid=0
 
 ---
@@ -100,5 +101,5 @@ MIT License
 
 ## 💡 Author
 
-Built with ❤️ by [Your Name] for event guest management.
+Built by [You-Yi] for event guest management.
 
