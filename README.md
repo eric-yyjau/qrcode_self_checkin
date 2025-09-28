@@ -2,6 +2,7 @@
 
 This is a lightweight self check-in system for events using **Google Apps Script**, **Google Sheets**, and a **mobile-friendly frontend**. Guests can enter their **Guest ID**, **full name**, or **email** to check in, see their assigned drink tickets, payment status, and whether they’ve already checked in.
 
+![Guest Check-In Screenshot](frontend_ui.png)
 ---
 
 ## ✨ Features
